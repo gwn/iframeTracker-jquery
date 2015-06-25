@@ -21,6 +21,7 @@ $.iframeTracker = {
   focusRetriever: null,  // Element used for restoring focus on window (element)
   focusRetrieved: false, // Says if the focus was retrived on the current page (bool)
   handlersList: [],      // Store a list of every trakers (created by calling $(selector).iframeTracker...)
+  active_iframe: null, // Store the currently clicked iframe to make it available to the user's handler
   
   // Init (called once on document ready)
   init: function(){
@@ -62,6 +63,7 @@ $.iframeTracker = {
   // Target mouseover event listener
   mouseoverListener: function(e) {
     e.data.handler.over = true;
+    $.iframeTracker.active_iframe = this;
   },
   
   // Target mouseout event listener
@@ -74,7 +76,9 @@ $.iframeTracker = {
   windowLoseFocus: function(event) {
     for (var i in this.handlersList) {
       if (this.handlersList[i].over == true) {
-        try {this.handlersList[i]();} catch(ex) {}
+        try {
+          this.handlersList[i].call(this.active_iframe, this.active_iframe);
+        } catch(ex) {}
       }
     }
   }
